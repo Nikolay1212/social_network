@@ -1,0 +1,29 @@
+GET localhost:8080/room
+Content-Type: application/json
+
+{
+  "title" : "DEFAULT ROOM",
+  "roomType" : "DEFAULT"
+}
+
+###
+
+POST localhost:8080/account
+Content-Type: application/json
+
+{
+  "firstName": "First",
+  "lastName": "FirstLast",
+  "hashPassword": "firstPassword"
+}
+
+###
+
+POST localhost:8080/account
+Content-Type: application/json
+
+{
+  "firstName": "Second",
+  "lastName": "SecondLast",
+  "hashPassword": "secondPassword"
+}
