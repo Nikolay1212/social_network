@@ -16,7 +16,7 @@ public class Message {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String text;
+    private String content;
 
     @ManyToOne
     @JoinColumn(name = "account_id")

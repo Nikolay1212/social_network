@@ -1,7 +1,8 @@
 package com.example.socialnetwork.controller;
 
-import com.example.socialnetwork.exception.UserAlreadyExistException;
-import com.example.socialnetwork.exception.UserNotFoundException;
+import com.example.socialnetwork.exception.AccountAlreadyExistException;
+import com.example.socialnetwork.exception.AccountNotFoundException;
+import com.example.socialnetwork.mapstruct.mappers.MapStructMapper;
 import com.example.socialnetwork.model.Account;
 import com.example.socialnetwork.service.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,12 +17,51 @@ public class AccountController {
     @Autowired
     private AccountService accountService;
 
+    @Autowired
+    private MapStructMapper mapStructMapper;
+
+    @GetMapping(value = "/ban/{account-id}")
+    public ResponseEntity banAccount(@PathVariable("account-id") Long id) {
+        try {
+            return ResponseEntity.ok(accountService.banAccount(id));
+        } catch (AccountNotFoundException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @GetMapping(value = "/unban/{account-id}")
+    public ResponseEntity unbanAccount(@PathVariable("account-id") Long id) {
+        try {
+            return ResponseEntity.ok(accountService.unbanAccount(id));
+        } catch (AccountNotFoundException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @GetMapping(value = "/moderator/assign/{account-id}")
+    public ResponseEntity assignModerator(@PathVariable("account-id") Long id) {
+        try {
+            return ResponseEntity.ok(accountService.assignModerator(id));
+        } catch (AccountNotFoundException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @GetMapping(value = "/moderator/remove/{account-id}")
+    public ResponseEntity removeModerator(@PathVariable("account-id") Long id) {
+        try {
+            return ResponseEntity.ok(accountService.removeModerator(id));
+        } catch (AccountNotFoundException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
     @PostMapping
     public ResponseEntity registration(@RequestBody Account account) {
         try {
             accountService.registration(account);
             return ResponseEntity.ok("Account " + account.getFirstName() + " was successfully added");
-        } catch (UserAlreadyExistException e) {
+        } catch (AccountAlreadyExistException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Error");
@@ -45,7 +85,7 @@ public class AccountController {
     public ResponseEntity getOneUser(@PathVariable("account-id") Long id) {
         try {
             return ResponseEntity.ok(accountService.getOne(id));
-        } catch (UserNotFoundException e) {
+        } catch (AccountNotFoundException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Error");

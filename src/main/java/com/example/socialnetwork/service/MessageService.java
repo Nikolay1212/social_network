@@ -1,6 +1,6 @@
 package com.example.socialnetwork.service;
 
-import com.example.socialnetwork.model.Account;
+import com.example.socialnetwork.dto.MessageDto;
 import com.example.socialnetwork.model.Message;
 import com.example.socialnetwork.repository.AccountRepo;
 import com.example.socialnetwork.repository.MessageRepo;
@@ -24,7 +24,22 @@ public class MessageService {
     @Autowired
     private RoomRepo roomRepo;
 
-    public void send(Message message) {
+    public MessageDto receive(MessageDto messageDto) {
+        Message message = new Message();
+        message.setAccount(accountRepo.getById(messageDto.getSender_id()));
+        message.setContent(messageDto.getContent());
+        message.setRoom(roomRepo.getById(messageDto.getRoom_id()));
         messageRepo.save(message);
+        roomRepo.save(roomRepo.getById(messageDto.getRoom_id()));
+        return messageDto;
+    }
+
+    public MessageDto send(Long messageId) {
+        Message message = messageRepo.getById(messageId);
+        return MessageDto.from(message);
+    }
+
+    public void delete(Long messageId) {
+        messageRepo.deleteById(messageId);
     }
 }

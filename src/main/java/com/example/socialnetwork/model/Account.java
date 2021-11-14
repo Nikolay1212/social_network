@@ -28,4 +28,22 @@ public class Account {
 
     @ManyToMany
     private List<Room> rooms;
+
+    @Enumerated(value = EnumType.STRING)
+    private Role role;
+
+    @Enumerated(value = EnumType.STRING)
+    private State state;
+
+    public enum Role {
+        ADMIN,
+        MODERATOR,
+        USER
+    }
+
+    public enum State {
+        CONFIRMED,
+        NOT_CONFIRMED,
+        BANNED
+    }
 }

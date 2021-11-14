@@ -1,8 +1,8 @@
 package com.example.socialnetwork.service;
 
 import com.example.socialnetwork.dto.AccountDto;
-import com.example.socialnetwork.exception.UserAlreadyExistException;
-import com.example.socialnetwork.exception.UserNotFoundException;
+import com.example.socialnetwork.exception.AccountAlreadyExistException;
+import com.example.socialnetwork.exception.AccountNotFoundException;
 import com.example.socialnetwork.model.Account;
 import com.example.socialnetwork.model.Message;
 import com.example.socialnetwork.model.Room;
@@ -23,21 +23,65 @@ public class AccountService {
     @Autowired
     private RoomRepo roomRepo;
 
-    public Account registration(Account account) throws UserAlreadyExistException {
+    public Account banAccount(Long id) throws AccountNotFoundException {
+        Optional<Account> accountOptional = accountRepo.findById(id);
+        if (accountOptional.isEmpty()) {
+            throw new AccountNotFoundException("Account id = " + id + " not found");
+        }
+        Account currentAccount = accountOptional.get();
+        currentAccount.setState(Account.State.BANNED);
+        accountRepo.save(currentAccount);
+        return currentAccount;
+    }
+
+    public Account unbanAccount(Long id) throws AccountNotFoundException {
+        Optional<Account> accountOptional = accountRepo.findById(id);
+        if (accountOptional.isEmpty()) {
+            throw new AccountNotFoundException("Account id = " + id + " not found");
+        }
+        Account currentAccount = accountOptional.get();
+        currentAccount.setState(Account.State.CONFIRMED);
+        accountRepo.save(currentAccount);
+        return currentAccount;
+    }
+
+    public Account assignModerator(Long id) throws AccountNotFoundException {
+        Optional<Account> accountOptional = accountRepo.findById(id);
+        if (accountOptional.isEmpty()) {
+            throw new AccountNotFoundException("Account id = " + id + " not found");
+        }
+        Account currentAccount = accountOptional.get();
+        currentAccount.setRole(Account.Role.MODERATOR);
+        accountRepo.save(currentAccount);
+        return currentAccount;
+    }
+
+    public Account removeModerator(Long id) throws AccountNotFoundException {
+        Optional<Account> accountOptional = accountRepo.findById(id);
+        if (accountOptional.isEmpty()) {
+            throw new AccountNotFoundException("Account id = " + id + " not found");
+        }
+        Account currentAccount = accountOptional.get();
+        currentAccount.setRole(Account.Role.USER);
+        accountRepo.save(currentAccount);
+        return currentAccount;
+    }
+
+    public Account registration(Account account) throws AccountAlreadyExistException {
         if (accountRepo.findByFirstName(account.getFirstName()) != null) {
-            throw new UserAlreadyExistException("Name " + account.getFirstName() + " already exists!");
+            throw new AccountAlreadyExistException("Name " + account.getFirstName() + " already exists!");
         }
         List<Room> defaultRoomList = roomRepo.findByAccessLevel();
         account.setRooms(defaultRoomList);
         return accountRepo.save(account);
     }
 
-    public AccountDto getOne(Long id) throws UserNotFoundException {
-        Optional<Account> userEntityOptional = accountRepo.findById(id);
-        if (userEntityOptional.isEmpty()) {
-            throw new UserNotFoundException("User not found");
+    public AccountDto getOne(Long id) throws AccountNotFoundException {
+        Optional<Account> accountEntityOptional = accountRepo.findById(id);
+        if (accountEntityOptional.isEmpty()) {
+            throw new AccountNotFoundException("User not found");
         }
-        return AccountDto.from(userEntityOptional.get());
+        return AccountDto.from(accountEntityOptional.get());
     }
 
     public boolean authorize(Account account) {
@@ -55,7 +99,7 @@ public class AccountService {
         return id;
     }
 
-    public void addNewMessage(Message message, Long id) throws UserNotFoundException {
+    public void addNewMessage(Message message, Long id) throws AccountNotFoundException {
         Account account = accountRepo.findById(id).get();
         List<Message> messageList = account.getMessageList();
         messageList.add(message);

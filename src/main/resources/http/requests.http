@@ -12,9 +12,11 @@ POST localhost:8080/account
 Content-Type: application/json
 
 {
-  "firstName": "First",
-  "lastName": "FirstLast",
-  "hashPassword": "firstPassword"
+  "firstName": "ADMIN_1",
+  "lastName": "ADMIN_1_LAST",
+  "hashPassword": "ADMIN_1_PASSWORD",
+  "role" : "ADMIN",
+  "state" : "CONFIRMED"
 }
 
 ###
@@ -23,7 +25,69 @@ POST localhost:8080/account
 Content-Type: application/json
 
 {
-  "firstName": "Second",
-  "lastName": "SecondLast",
-  "hashPassword": "secondPassword"
+  "firstName": "USER_1",
+  "lastName": "USER_1_LAST",
+  "hashPassword": "USER_1_PASSWORD",
+  "role" : "USER",
+  "state" : "CONFIRMED"
 }
+
+###
+
+POST localhost:8080/account
+Content-Type: application/json
+
+{
+  "firstName": "USER_2",
+  "lastName": "USER_2_LAST",
+  "hashPassword": "USER_2_PASSWORD",
+  "role" : "USER",
+  "state" : "CONFIRMED"
+}
+
+###
+
+GET localhost:8080/account
+Content-Type: application/json
+
+{
+  "firstName": "USER_2",
+  "lastName": "USER_2_LAST",
+  "hashPassword": "USER_2_PASSWORD",
+  "role" : "USER",
+  "state" : "CONFIRMED"
+}
+
+###
+
+GET localhost:8080/account/ban/2
+
+###
+
+GET localhost:8080/account/unban/2
+
+###
+
+GET localhost:8080/message/receive
+Content-Type: application/json
+
+{
+  "content" : "Message from Admin",
+  "sender_id" : 1,
+  "room_id" : 1
+}
+
+###
+
+GET localhost:8080/message/send/2
+Content-Type: application/json
+
+{
+"content" : "Hello, World!",
+"sender_id" : 2,
+"room_id" : 1
+}
+
+###
+
+DELETE localhost:8080/message/delete/1

@@ -1,8 +1,6 @@
 package com.example.socialnetwork.controller;
 
-import com.example.socialnetwork.dto.AccountDto;
-import com.example.socialnetwork.exception.UserNotFoundException;
-import com.example.socialnetwork.model.Message;
+import com.example.socialnetwork.dto.MessageDto;
 import com.example.socialnetwork.service.AccountService;
 import com.example.socialnetwork.service.MessageService;
 import com.example.socialnetwork.service.RoomService;
@@ -13,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 
 @Controller
-@RequestMapping("/user/sendMessage")
+@RequestMapping("/message")
 public class MessageController {
 
     @Autowired
@@ -25,17 +23,19 @@ public class MessageController {
     @Autowired
     private RoomService roomService;
 
-    @PostMapping("/{id}")
-    public String sendMessage(@RequestBody Message message, @PathVariable("id") Long id) {
-        try {
-            AccountDto account = accountService.getOne(id);
-            messageService.send(message);
-            roomService.send(message);
-            accountService.addNewMessage(message, account.getId());
-            return message.getText();
-        } catch (UserNotFoundException e) {
-            e.printStackTrace();
-            return ResponseEntity.badRequest().body("Account not found").getBody();
-        }
+    @GetMapping(value = "/send/{message_id}")
+    public ResponseEntity send(@PathVariable("message_id") Long messageId) {
+        return ResponseEntity.ok(messageService.send(messageId));
+    }
+
+    @GetMapping(value = "/receive")
+    public ResponseEntity receive(@RequestBody MessageDto messageDto) {
+        return ResponseEntity.ok(messageService.receive(messageDto));
+    }
+
+    @DeleteMapping(value = "/delete/{message_id}")
+    public ResponseEntity delete(@PathVariable("message_id") Long messageId) {
+        messageService.delete(messageId);
+        return ResponseEntity.ok("Message deleted");
     }
 }
